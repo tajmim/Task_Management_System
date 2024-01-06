@@ -1,0 +1,33 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+img {
+  width: 100%;
+}
+
+a {
+  text-decoration: none;
+}
+
+.sidebar {
+  background-color: gray;
+  min-height: 100%;
+}
+.sidebar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+.sidebar ul li {
+  list-style-type: none;
+  text-align: center;
+}
+.sidebar ul li a {
+  color: white;
+  padding: 10px;
+  font-size: 20px;
+  display: inline-block;
+}/*# sourceMappingURL=main.css.map */
