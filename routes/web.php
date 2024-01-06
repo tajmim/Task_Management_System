@@ -44,6 +44,9 @@ Route::middleware(['ManagerLogin'])->group(function () {
     Route::get('manager/dashboard', [ManagerController::class, 'dashboard'])->name('manager.dashboard');
     Route::get('manager/logout', [AuthController::class, 'manager_logout'])->name('manager.logout');
     Route::get('manager/manage/projects', [ProjectController::class, 'manage_projects'])->name('manage.projects');
+    Route::post('create/project', [ProjectController::class, 'store_project'])->name('create_project');
+    Route::get('project/details/{id}', [ProjectController::class, 'project_details'])->name('project_details');
+    Route::post('add_developer_to_project/{id}', [ProjectController::class, 'add_developer_to_project'])->name('add_developer_to_project');
 });
 
 Route::middleware(['DeveloperLogin'])->group(function () {

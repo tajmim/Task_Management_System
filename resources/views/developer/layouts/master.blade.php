@@ -53,7 +53,7 @@
                         <a class="nav-link disabled" aria-disabled="true">Disabled</a>
                     </li>
                 </ul>
-                <a href="{{ route('manager.logout') }}" class="btn btn-danger">Log out</a>
+                <a href="{{ route('manager.logout') }}" class="btn btn-primary">Log out</a>
             </div>
         </div>
     </nav>
