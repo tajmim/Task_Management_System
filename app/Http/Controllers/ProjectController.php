@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Task;
 use App\Models\Project;
 use App\Models\Developer;
 use Illuminate\Http\Request;
@@ -49,9 +50,15 @@ class ProjectController extends Controller
         // dd($project);
         $not_assigned_developers = Developer::all();
         $assigned_developers = Developer::rightjoin('project_developers','project_developers.developer_id','developers.id')
+        ->where('project_developers.project_id', $id)
         ->select('developers.*')
         ->get();
-        return view('manager.project_details',compact('project','not_assigned_developers','assigned_developers'));
+
+        $tasks = Task::where('project_id',$id)
+        ->leftjoin('developers','developers.id','tasks.assign_to')
+        ->select('tasks.*','developers.name as developer_name')
+        ->get();
+        return view('manager.project_details',compact('project','not_assigned_developers','assigned_developers','tasks'));
     }
 
 
@@ -63,6 +70,42 @@ class ProjectController extends Controller
         DB::table('project_developers')->insert(['project_id'=>$id,'developer_id'=>$request->developer_id]);
         return redirect()->back()->with('message','Developer added Successfully');
     }
+    public function remove_developers_from_project($p_id, $d_id){
+        DB::table('project_developers')->where('project_id',$p_id)->where('developer_id',$d_id)->delete();
+        return redirect()->back()->with('message','Developer removed Successfully');
+    }
+
+
+
+
+
+    public function developer_manage_projects(){
+        $projects = Project::leftjoin('managers', 'projects.created_by', 'managers.id')
+        ->rightjoin('project_developers', 'project_developers.project_id','projects.id')
+        ->where('project_developers.developer_id','=',Auth::guard('developer')->user()->id)
+        ->select('projects.*','managers.name as created_by')
+        ->get();
+        return view('developer.manage_projects' , compact('projects'));
+    }
+    public function developer_project_details($id){
+        $project = Project::where('projects.id', $id)
+        ->leftjoin('managers', 'managers.id','projects.created_by')
+        ->select('projects.*','managers.name as created_by')
+        ->first();
+        // dd($project);
+        $not_assigned_developers = Developer::all();
+        $assigned_developers = Developer::rightjoin('project_developers','project_developers.developer_id','developers.id')
+        ->where('project_developers.project_id', $id)
+        ->select('developers.*')
+        ->get();
+
+        $tasks = Task::where('project_id',$id)
+        ->leftjoin('developers','developers.id','tasks.assign_to')
+        ->select('tasks.*','developers.name as developer_name')
+        ->get();
+        return view('developer.project_details',compact('project','not_assigned_developers','assigned_developers','tasks'));
+    }
+
 
     
 }

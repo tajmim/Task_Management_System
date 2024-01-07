@@ -1,4 +1,4 @@
-@extends('manager.layouts.master')
+@extends('developer.layouts.master')
 
 @section('content')
     <h2 class="text-center mt-3">Project Details</h2>
@@ -28,10 +28,7 @@
                     <hr>
                     <h3 class="text-center my-3">Tasks</h3>
                     <hr>
-                    <div class="d-flex justify-content-end">
-                        <p class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#createtaskform">
-                            Create a new task</p>
-                    </div>
+
 
 
                     <div class="accordion" id="accordionExample">
@@ -61,9 +58,31 @@
                                 <div id="collapse{{ $task->id }}" class="accordion-collapse collapse"
                                     aria-labelledby="heading{{ $task->id }}" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
-                                        <h6>Assigned To: {{$task->developer_name}}</h6>
+                                        <h6>Assigned To: {{ $task->developer_name }}</h6>
                                         <p>{{ $task->task_description }} </p>
-                                        
+
+
+                                        <hr>
+                                        @if ($task->assign_to == Auth::guard('developer')->user()->id)
+                                            <form class="form-inline" action="{{ route('update_status_task', $task->id) }}"
+                                                method="post">
+                                                @csrf <!-- Laravel CSRF token, add this line if you're using Laravel -->
+                                                <div class="form-group d-flex mr-2">
+                                                    <select class="form-control m-1" id="dropdown" name="status">
+
+                                                        <option value="pending">pending</option>
+                                                        <option value="accepted">accepted</option>
+                                                        <option value="completed">completed</option>s
+
+
+                                                    </select>
+                                                    <button type="submit" class="btn btn-primary m-1">Update</button>
+                                                </div>
+                                            </form>
+                                        @endif
+
+
+
 
                                     </div>
 
@@ -89,19 +108,7 @@
                     Developers
                 </h5>
                 <hr>
-                <form class="form-inline" action="{{ route('add_developer_to_project', $project->id) }}" method="post">
-                    @csrf <!-- Laravel CSRF token, add this line if you're using Laravel -->
-                    <div class="form-group d-flex mr-2">
-                        <select class="form-control m-1" id="dropdown" name="developer_id">
-                            @foreach ($not_assigned_developers as $developer)
-                                <option value="{{ $developer->id }}">{{ $developer->name }}</option>
-                            @endforeach
 
-                        </select>
-                        <button type="submit" class="btn btn-primary m-1">Add</button>
-                    </div>
-                </form>
-                <hr>
 
                 <table class="table">
                     <thead>
@@ -125,63 +132,6 @@
                 @if (count($assigned_developers) == 0)
                     <p class="text-muted text-center">No developers</p>
                 @endif
-            </div>
-        </div>
-    </div>
-
-
-
-
-
-    <!-- Modal for add task -->
-    <div class="modal fade" id="createtaskform" tabindex="-1" role="dialog" aria-labelledby="modalTitleId"
-        aria-hidden="true">
-        <div class="modal-dialog  modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitleId">
-                        Create a Task
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="{{ route('create_task') }}" method="POST">
-                        @csrf
-                        <div class="form-group mb-3">
-                            <label style="font-weight:bold" for="title">Task Name</label>
-                            <input type="text" class="form-control" id="task_name" aria-describedby="task_name"
-                                placeholder="Add Task Name" name="task_name">
-                        </div>
-                        <div class="form-group mb-3">
-                            <label style="font-weight:bold" for="task_description">Task Description</label>
-                            <textarea class="form-control" name="task_description" id="task_description" rows="5"
-                                placeholder="Enter task description"></textarea>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label style="font-weight:bold" for="assigned_to">Assigned To</label>
-                            <select class="form-control m-1" id="dropdown" name="developer_id">
-                                @foreach ($assigned_developers as $developer)
-                                    <option value="{{ $developer->id }}">{{ $developer->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group mb-3">
-                            <label style="font-weight:bold" for="desc">Deadline</label>
-                            <input type="text" class="form-control datepicker" id="deadline"
-                                aria-describedby="deadline" name="deadline">
-                        </div>
-
-                        <input type="hidden" name="project_id" value="{{ $project->id }}">
-
-                        <button type="submit" class="btn btn-primary">Submit</button>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Close
-                    </button>
-                    <button type="button" class="btn btn-primary">Save</button>
-                </div>
             </div>
         </div>
     </div>
